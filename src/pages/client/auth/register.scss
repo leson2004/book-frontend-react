@@ -1,0 +1,49 @@
+.page_wrapper {
+  display: flex;
+  justify-content: center;   // căn giữa ngang
+  align-items: center;       // căn giữa dọc
+  min-height: 100vh;         // chiếm toàn bộ chiều cao màn hình
+  background: #f5f7fa;       // màu nền nhạt cho đẹp
+
+  .form_login {
+    display: flex;
+    flex-direction: column;  // xếp các phần tử dọc
+    justify-content: center;
+    align-items: stretch;
+    width: 100%;
+    max-width: 400px;
+    padding: 24px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .ant-form-item {
+      margin-bottom: 16px;
+    }
+
+    .ant-btn {
+      width: 100%;
+      border-radius: 6px;
+      font-weight: 500;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 10px;
+
+      a {
+        color: #1677ff;
+        font-weight: 500;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+}
