@@ -7,8 +7,17 @@ const registerApi = async(fullName:string,email:string,password:string,phone:str
     return await axios.post<IBackendRes<IRegister >>("/api/v1/user/register",{fullName,email,password,phone})
 
 }
-const fetchAccountApi = async()=>{
-    return await axios.get<IBackendRes<IAccount>>("/api/v1/auth/account")
+const fetchAccountAPI = async()=>{
+    return await axios.get<IBackendRes<IAccount>>("/api/v1/auth/account",{
+        headers:{delay:2000}
+    })
+}
+const logoutAPI=async()=>{
+    return await axios.post<IBackendRes<IRegister >>("/api/v1/auth/logout")
+}
+const getUsersAPI =(query:string)=>{
+    
+    return  axios.get<IBackendRes<IModelPaginate<IUserTable>>>(`api/v1/user?${query }`);
 }
 
-export {loginApi,registerApi,fetchAccountApi}
+export {loginApi,registerApi,fetchAccountAPI,logoutAPI,getUsersAPI}

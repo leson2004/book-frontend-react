@@ -7,6 +7,7 @@ declare global {
         statusCode: number | string;
         data?: T;
     }
+    
     interface IUser<>{
         email: string,
         phone:string,
@@ -27,7 +28,7 @@ declare global {
             pages: number;
             total: number;
         },
-        results: T[]
+        result: T[]
     }
     interface ILogin<>{
         access_token:string,
@@ -48,5 +49,15 @@ declare global {
     // }
     interface IAccount<>{
         user:IUser
+    }
+    interface IUserTable {
+        _id: string ;
+        fullName: string ;
+        email : string ;
+        role :string; 
+        avatar:string;
+        isActive:boolean;
+        createAt:Date;
+        upDateAt:date;
     }
    }

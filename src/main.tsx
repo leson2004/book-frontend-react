@@ -1,60 +1,122 @@
-import { StrictMode } from 'react'
+import { StrictMode,useState } from 'react'
 import { createRoot } from 'react-dom/client'
-//import App from './layout.tsx'
 import Layout from '@/layout';
-//import './index.css'
-import './styles/global.scss'
 import {
   createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
-import { App } from 'antd';
+import enUS from 'antd/locale/en_US';
+import { ConfigProvider , ConfigProviderProps} from 'antd';
 
-import AboutPage from 'pages/client/about';
 import BookPage from 'pages/client/book';
-import HomePage from 'pages/client/home';
-import RegisterPage from 'pages/client/auth/register';
+import AboutPage from 'pages/client/about';
 import LoginPage from 'pages/client/auth/login';
-import {AppContext} from '@/components/context/app.context'
+import RegisterPage from 'pages/client/auth/register';
+import 'styles/global.scss'
+import HomePage from 'pages/client/home';
+import { App } from 'antd';
+import { AppProvider } from 'components/context/app.context';
+import ProtectedRoute from '@/components/auth';
+import DashBoardPage from 'pages/admin/dashboard';
+import ManageBookPage from 'pages/admin/manage.book';
+import ManageOrderPage from 'pages/admin/manage.order';
+import ManageUserPage from 'pages/admin/manage.user';
+import LayoutAdmin from '@/components/layouts/layout.admin';
+
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Layout/>,
-    
+    element: <Layout />,
     children: [
-      
       {
-        path: "/about",
-        element: <div><AboutPage/></div>
+        index: true,
+        element: <HomePage />
       },
       {
         path: "/book",
-        element: <div><BookPage/></div>
+        element: <BookPage />,
       },
       {
-        path: "/home",
-        element: <div><HomePage/></div>
+        path: "/about",
+        element: <AboutPage />,
+      },
+      {
+        path: "/checkout",
+        element: (
+          <ProtectedRoute>
+            <div>checkout page</div>
+          </ProtectedRoute>
+        ),
       }
-    ],
+    ]
   },
   {
-     path: "/register",
-        element: <div><RegisterPage/></div>
-   },
-   {
-        path: "/login",
-        element: <div><LoginPage/></div>
+    path: "admin",
+    element: <LayoutAdmin />,
+    children: [
+      {
+        index: true,
+        element: (
+          <ProtectedRoute>
+            <DashBoardPage />
+          </ProtectedRoute>
+        )
       },
-]);
-createRoot(document.getElementById('root')!).render(
-    
-      <StrictMode>
-        <App>
-          <AppContext>
+      {
+        path: "book",
+        element: (
+          <ProtectedRoute>
+            <ManageBookPage />
+          </ProtectedRoute>
+        )
+      },
+      {
+        path: "order",
+        element: (
+          <ProtectedRoute>
+            <ManageOrderPage />
+          </ProtectedRoute>
+        )
+      },
+      {
+        path: "user",
+        element: (
+          <ProtectedRoute>
+            <ManageUserPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/admin",
+        element: (
+          <ProtectedRoute>
+            <div>admin page</div>
+          </ProtectedRoute>
+        ),
+      },
 
-            <RouterProvider router={router} />
-          </AppContext>
-        </App>
-      </StrictMode>,
-    
+    ]
+  },
+  {
+    path: "/login",
+    element: <LoginPage />,
+  },
+  {
+    path: "/register",
+    element: <RegisterPage />,
+  },
+
+]);
+
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <App>
+      <AppProvider>
+        
+        <ConfigProvider locale={enUS}>
+          <RouterProvider router={router} />
+        </ConfigProvider>
+      </AppProvider>
+    </App>
+  </StrictMode>,
 )
