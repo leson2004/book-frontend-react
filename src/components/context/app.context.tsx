@@ -9,6 +9,7 @@ interface IAppContext {
     user: IUser | null;
     isAppLoading: boolean;
     setIsAppLoading: (v: boolean) => void;
+    
 }
 
 const CurrentAppContext = createContext<IAppContext | null>(null);
@@ -21,6 +22,8 @@ export const AppProvider = (props: TProps) => {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
     const [user, setUser] = useState<IUser | null>(null);
     const [isAppLoading, setIsAppLoading] = useState<boolean>(true);
+    //
+    
 
     useEffect(() => {
         const fetchAccount = async () => {
@@ -41,7 +44,7 @@ export const AppProvider = (props: TProps) => {
             {isAppLoading === false ?
                 <CurrentAppContext.Provider value={{
                     isAuthenticated, user, setIsAuthenticated, setUser,
-                    isAppLoading, setIsAppLoading
+                    isAppLoading, setIsAppLoading,
                 }}>
                     {props.children}
                 </CurrentAppContext.Provider>

@@ -1,13 +1,23 @@
 import { PlusOutlined ,DeleteOutlined,EditOutlined} from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
-import { ProTable, TableDropdown } from '@ant-design/pro-components';
-import { Button,Pagination  } from 'antd';
-import { useEffect, useRef, useState } from 'react';
+import { ProTable } from '@ant-design/pro-components';
+import { Button  ,Drawer } from 'antd';
+import {  useRef, useState } from 'react';
 
 import { getUsersAPI } from '@/services/api';
 import {dateRangeValidate} from '@/services/helper'
+import ViewDetailUser from './viewdetail.user';
 
-const columns: ProColumns<IUserTable>[] = [
+
+type ISearch ={
+        fullName:string;
+        email:string;
+        createdAt:string;
+        createRange:string;
+
+    }
+const TableUser = () => {
+    const columns: ProColumns<IUserTable>[] = [
     {
 
         dataIndex: 'index',
@@ -19,12 +29,17 @@ const columns: ProColumns<IUserTable>[] = [
         search: false,
         title: 'id',
         dataIndex: '_id',
-        //width:200
-        render(dom, entity, index, action, schema,) {
+        // width:200
+        render(dom, entity, index, action, schema) {
             return(
-                <a>{entity._id}</a>
+                <a 
+                    onClick={()=>{
+                        setOpenViewDetail(true);
+                        setDataViewDetail(entity);
+                }} >{entity._id}</a>
             )
         },
+        
     },
     {
         
@@ -51,6 +66,7 @@ const columns: ProColumns<IUserTable>[] = [
         dataIndex: 'createdAt',
         valueType: 'date',
         hideInSearch:true,
+        sorter:true,
     },
      {
         search: false,
@@ -87,15 +103,11 @@ const columns: ProColumns<IUserTable>[] = [
 
     
 ];
-type ISearch ={
-    fullName:string;
-    email:string;
-    createdAt:string;
-    createRange:string;
+    
+    const [dataViewDetail,setDataViewDetail]=useState<IUserTable |null>(null);
+    const [openViewDetail, setOpenViewDetail] = useState<boolean>(false);
+    const [openModalCreate,setOpenModalCreate]= useState<boolean>(false)
 
-}
-const TableUser = () => {
-   // const [userPage,setUserPage]=useState<IModelPaginate<IUserTable>>();
     const [meta,setMeTa]=useState({
         current:1,
         pageSize:5,
@@ -117,7 +129,7 @@ const TableUser = () => {
                     // fullName : query=`${query}/fullName=${params.fullName}/i`
                     //email : query=`${query}/fullName=${params.fullName}/i`
                     //createAt : 
-                    console.log('param',params);
+                   
                     let query='';
                     if(params){
                         query=`current=${params.current ?? 1}&pageSize=${params.pageSize ?? 5}`;
@@ -131,6 +143,17 @@ const TableUser = () => {
                         if(createDateRange){
                             
                             query+=`&createdAt>=${createDateRange[0]}&createdAt<=${createDateRange[1]}`// tại sao có thể dùng key là 0,1 ??[startDate, endDate];
+                        }
+                        if(!params.fullName&&!params.email&&!createDateRange&&sort.createdAt){
+                            const status= sort.createdAt;
+                            if(status==='ascend'){
+
+                                query+=`&sort=createdAt`
+                            }
+                            if(status==="descend"){
+                                query+=`&sort=-createdAt`
+                            }
+                            
                         }
                     }
                     const res=await getUsersAPI(query);
@@ -175,6 +198,17 @@ const TableUser = () => {
 
                 ]}
             />
+        {/* hiển thị thông tin : detail user  */}
+             <ViewDetailUser
+                
+                openViewDetail={openViewDetail} 
+                setOpenViewDetail={setOpenViewDetail} 
+                dataViewDetail={dataViewDetail}
+                setDataViewDetail={setDataViewDetail}
+            />
+
+        {/* modal tao moi user */}
+        
         </>
     );
 };

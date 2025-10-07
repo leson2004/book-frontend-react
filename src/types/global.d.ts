@@ -57,7 +57,7 @@ declare global {
         role :string; 
         avatar:string;
         isActive:boolean;
-        createAt:Date;
+        createAt:date;
         upDateAt:date;
     }
    }
