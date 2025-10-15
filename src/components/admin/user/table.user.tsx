@@ -144,12 +144,13 @@ const TableUser = () => {
               query += `&createdAt>=${createDateRange[0]}&createdAt<=${createDateRange[1]}`; // tại sao có thể dùng key là 0,1 ??[startDate, endDate];
             }
             // default
-            query += `&sort=-createdAt`;
 
             if (sort && sort.createdAt) {
               query += `&sort=${
                 sort.createdAt === "ascend" ? "createdAt" : "-createdAt"
               }`;
+            } else {
+              query += `&sort=-createdAt`;
             }
           }
           const res = await getUsersAPI(query);
