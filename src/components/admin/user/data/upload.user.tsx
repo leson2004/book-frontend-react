@@ -6,28 +6,13 @@ import { Buffer } from "buffer";
 import { useState } from "react";
 import Exceljs from "exceljs";
 
-const { Dragger } = Upload;
+import { createNewUserBulk } from "@/services/api";
 
-// const columns: TableProps<DataType>["columns"] = [
-//   {
-//     title: "Họ và tên",
-//     dataIndex: "fullName",
-//     key: "name",
-//   },
-//   {
-//     title: "Email",
-//     dataIndex: "email",
-//     key: "age",
-//   },
-//   {
-//     title: "Số điện thoại",
-//     dataIndex: "phone",
-//     key: "address",
-//   },
-// ];
+const { Dragger } = Upload;
 type IProps = {
   openModalImport: boolean;
   setOpenModalImport: (v: boolean) => void;
+  refreshTable: () => void;
 };
 interface DataType {
   fullName: string;
@@ -40,9 +25,31 @@ interface IDataImport {
   phone: string;
 }
 const ImportUser = (prop: IProps) => {
-  const { openModalImport, setOpenModalImport } = prop;
+  const { openModalImport, setOpenModalImport, refreshTable } = prop;
   const [dataImport, setDataImport] = useState<IDataImport[]>([]);
   const { message } = App.useApp();
+  const [isSubmit, setIsSubmit] = useState<boolean>(false);
+  const createUserBulk = async () => {
+    const dataUser = dataImport.map((item) => {
+      return {
+        fullName: item.fullName,
+        email: item.email,
+        phone: item.phone,
+        password: import.meta.env.VITE_USER_CREATE_DEFAULT_PASSWORD,
+      };
+    });
+    setIsSubmit(true);
+    const res = await createNewUserBulk(dataUser);
+    if (res) {
+      message.success(`success: ${res.data?.countSuccess}
+        error : ${res.data?.countError}
+        `);
+    }
+    setIsSubmit(false);
+    setDataImport([]);
+    setOpenModalImport(false);
+    refreshTable();
+  };
   const props: UploadProps = {
     name: "file",
     multiple: true,
@@ -63,10 +70,6 @@ const ImportUser = (prop: IProps) => {
         console.log("i", info.file, info.fileList);
       }
       if (status === "done") {
-        // const file: any = info.file.originFileObj;
-        // const arrayBuffer = await file.arrayBuffer();
-        // const buffer = Buffer.from(arrayBuffer);
-        // console.log("b", buffer);
         console.log("info", info);
         message.success(`${info.file.name} file uploaded successfully.`);
         if (info.fileList && info.fileList.length > 0) {
@@ -74,7 +77,6 @@ const ImportUser = (prop: IProps) => {
           //load file to buffer
           const workbook = new Exceljs.Workbook();
           const arrayBuffer = await file.arrayBuffer();
-          //const buffer = Buffer.from(arrayBuffer);
           // use readFile for testing purpose
           await workbook.xlsx.load(arrayBuffer);
           // covert file to json
@@ -92,6 +94,9 @@ const ImportUser = (prop: IProps) => {
                 obj[keys[i]] = values[i];
               }
               jsonData.push(obj);
+            });
+            jsonData = jsonData.map((item, index) => {
+              return { ...item, idex: index + 1 };
             });
             setDataImport(jsonData);
             console.log("son", jsonData);
@@ -111,13 +116,18 @@ const ImportUser = (prop: IProps) => {
         title="Upload user"
         closable={{ "aria-label": "Custom Close Button" }}
         open={openModalImport}
-        onOk={() => setOpenModalImport(false)}
+        onOk={() => {
+          createUserBulk();
+        }}
         onCancel={() => {
           setOpenModalImport(false);
           setDataImport([]);
         }}
         width={"40%"}
-        okButtonProps={{ disabled: dataImport.length > 0 ? false : true }}
+        okButtonProps={{
+          disabled: dataImport.length > 0 ? false : true,
+          loading: isSubmit,
+        }}
         // do not close when click outside
         maskClosable={false}
         destroyOnClose={false}
@@ -135,6 +145,7 @@ const ImportUser = (prop: IProps) => {
             </p>
           </Dragger>
           <Table<DataType>
+            rowKey={"id"}
             dataSource={dataImport}
             columns={[
               {

@@ -45,7 +45,19 @@ const createNewUser = async (
     phone,
   });
 };
-
+const createNewUserBulk = (
+  arrayUserUpload: {
+    password: string;
+    fullName: string;
+    email: string;
+    phone: string;
+  }[]
+) => {
+  return axios.post<IBackendRes<IUserBulk>>(
+    "/api/v1/user/bulk-create",
+    arrayUserUpload
+  );
+};
 export {
   loginApi,
   registerApi,
@@ -53,4 +65,5 @@ export {
   logoutAPI,
   getUsersAPI,
   createNewUser,
+  createNewUserBulk,
 };
