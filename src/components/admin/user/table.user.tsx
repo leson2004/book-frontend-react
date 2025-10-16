@@ -7,14 +7,16 @@ import {
 } from "@ant-design/icons";
 import type { ActionType, ProColumns } from "@ant-design/pro-components";
 import { ProTable } from "@ant-design/pro-components";
-import { Button, Drawer } from "antd";
+import { Button, Drawer, message, Popconfirm } from "antd";
 import { useRef, useState } from "react";
+import type { PopconfirmProps } from "antd";
 
-import { getUsersAPI } from "@/services/api";
+import { deleteUser, getUsersAPI } from "@/services/api";
 import { dateRangeValidate } from "@/services/helper";
 import ViewDetailUser from "./viewdetail.user";
 import CreateNewUser from "./create.user";
 import ImportUser from "./data/upload.user";
+import UpdateUser from "./update.user";
 
 type ISearch = {
   fullName: string;
@@ -80,20 +82,34 @@ const TableUser = () => {
               border: "none",
               cursor: "pointer",
             }}
-            onClick={() => console.log(record)}
-          >
-            <DeleteOutlined style={{ fontSize: "16px", color: "#f57800" }} />
-          </button>
-          <button
-            style={{
-              background: "transparent",
-              border: "none",
-              cursor: "pointer",
+            onClick={() => {
+              //console.log(record);
+              setDataUpdateUser(record);
+              setOpenModalUpdate(true);
             }}
-            onClick={() => console.log(record)}
           >
             <EditOutlined style={{ fontSize: "16px", color: "#ff4d4f" }} />
           </button>
+          <Popconfirm
+            title="Delete User"
+            description="Are you sure to delete this user?"
+            onConfirm={() => {
+              handleDeleteUser(record._id);
+            }}
+            //onCancel={cancel}
+            okText="Yes"
+            cancelText="No"
+          >
+            <button
+              style={{
+                background: "transparent",
+                border: "none",
+                cursor: "pointer",
+              }}
+            >
+              <DeleteOutlined style={{ fontSize: "16px", color: "#f57800" }} />
+            </button>
+          </Popconfirm>
         </>
       ),
     },
@@ -102,11 +118,22 @@ const TableUser = () => {
     // từ đó sẽ tạo giá trị query là các kiểu api sẽ truyền vào với điều kiệ khác nhau sẽ api đc gửi và lấy dữ liệu khác nhau .
   ];
 
+  const handleDeleteUser = async (id: string) => {
+    const res = await deleteUser(id);
+    console.log("res", res);
+    if (res.data) {
+      refreshTable();
+      message.success("Delete User Success");
+    } else {
+      message.error(res.message);
+    }
+  };
   const [dataViewDetail, setDataViewDetail] = useState<IUserTable | null>(null);
   const [openViewDetail, setOpenViewDetail] = useState<boolean>(false);
   const [openModalCreate, setOpenModalCreate] = useState<boolean>(false);
   const [openModalImport, setOpenModalImport] = useState<boolean>(false);
-  const [openModalExport, setOpenModalExport] = useState<boolean>(false);
+  const [openModalUpdate, setOpenModalUpdate] = useState<boolean>(false);
+  const [dataUpdateUser, setDataUpdateUser] = useState<IUserTable | null>(null);
   const [meta, setMeTa] = useState({
     current: 1,
     pageSize: 5,
@@ -212,7 +239,7 @@ const TableUser = () => {
             icon={<ExportOutlined />}
             onClick={() => {
               // actionRef.current?.reload();
-              setOpenModalExport(true);
+              // setOpenModalExport(true);
             }}
             type="primary"
           >
@@ -220,6 +247,8 @@ const TableUser = () => {
           </Button>,
         ]}
       />
+      {/* popconfirm  xoa user*/}
+
       {/* hiển thị thông tin : detail user  */}
       <ViewDetailUser
         openViewDetail={openViewDetail}
@@ -238,6 +267,13 @@ const TableUser = () => {
         openModalImport={openModalImport}
         setOpenModalImport={setOpenModalImport}
         refreshTable={refreshTable}
+      />
+      <UpdateUser
+        openModalUpdate={openModalUpdate}
+        setOpenModalUpdate={setOpenModalUpdate}
+        refreshTable={refreshTable}
+        dataUpdateUser={dataUpdateUser}
+        setDataUpdateUser={setDataUpdateUser}
       />
     </>
   );

@@ -58,6 +58,20 @@ const createNewUserBulk = (
     arrayUserUpload
   );
 };
+const updateUser = (
+  _id: string | undefined,
+  fullName: string,
+  phone: string
+) => {
+  return axios.put<IBackendRes<IRegister>>("/api/v1/user", {
+    _id,
+    fullName,
+    phone,
+  });
+};
+const deleteUser = (id: string) => {
+  return axios.delete<IBackendRes<IRegister>>(`/api/v1/user/${id}`);
+};
 export {
   loginApi,
   registerApi,
@@ -66,4 +80,6 @@ export {
   getUsersAPI,
   createNewUser,
   createNewUserBulk,
+  updateUser,
+  deleteUser,
 };

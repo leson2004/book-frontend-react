@@ -56,6 +56,7 @@ declare global {
     email: string;
     role: string;
     avatar: string;
+    phone: string;
     isActive: boolean;
     createAt: date;
     upDateAt: date;
