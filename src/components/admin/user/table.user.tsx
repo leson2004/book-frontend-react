@@ -9,7 +9,6 @@ import type { ActionType, ProColumns } from "@ant-design/pro-components";
 import { ProTable } from "@ant-design/pro-components";
 import { Button, Drawer, message, Popconfirm } from "antd";
 import { useRef, useState } from "react";
-import type { PopconfirmProps } from "antd";
 
 import { deleteUser, getUsersAPI } from "@/services/api";
 import { dateRangeValidate } from "@/services/helper";

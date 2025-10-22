@@ -66,4 +66,17 @@ declare global {
     countError: string;
     detail: any;
   }
+  interface IBooks {
+    _id: string;
+    thumbnail: string;
+    slider: [];
+    mainText: string;
+    author: string;
+    price: number;
+    sold: number;
+    quantity: number;
+    category: string;
+    createdAt: string;
+    updatedAt: string;
+  }
 }

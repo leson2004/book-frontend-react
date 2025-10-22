@@ -72,6 +72,11 @@ const updateUser = (
 const deleteUser = (id: string) => {
   return axios.delete<IBackendRes<IRegister>>(`/api/v1/user/${id}`);
 };
+const getBookAPI = (query: string) => {
+  return axios.get<IBackendRes<IModelPaginate<IBooks>>>(
+    `/api/v1/book?current=1&pageSize=10`
+  );
+};
 export {
   loginApi,
   registerApi,
@@ -82,4 +87,5 @@ export {
   createNewUserBulk,
   updateUser,
   deleteUser,
+  getBookAPI,
 };
