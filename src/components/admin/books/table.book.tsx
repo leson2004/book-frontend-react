@@ -18,6 +18,7 @@ function TableBook() {
   });
   const [openViewDetail, setOpenViewDetail] = useState<boolean>(false);
   const [dataViewDetail, setDataViewDetail] = useState<IBooks | null>(null);
+  const [openModalAddBook, setOpenModalAddBook] = useState<boolean>(false);
   const columns: ProColumns<IBooks>[] = [
     {
       dataIndex: "index",

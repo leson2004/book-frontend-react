@@ -6,6 +6,7 @@ import { FORMATE_DATE } from "@/services/helper";
 import { Image, Upload } from "antd";
 import type { UploadFile, UploadProps } from "antd";
 import { useEffect, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 type IProps = {
   openViewDetail: boolean;
   setOpenViewDetail: (v: boolean) => void;
@@ -24,26 +25,7 @@ const ViewDetailBook = ({
   //   }`;
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
-  const [fileList, setFileList] = useState<UploadFile[]>([
-    {
-      uid: "-1",
-      name: "image.png",
-      status: "done",
-      url: "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png",
-    },
-    {
-      uid: "-2",
-      name: "image.png",
-      status: "done",
-      url: "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png",
-    },
-    {
-      uid: "-3",
-      name: "image.png",
-      status: "done",
-      url: "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png",
-    },
-  ]);
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
 
   const handlePreview = async (file: UploadFile) => {
     setPreviewImage(file.url || (file.preview as string));
@@ -56,6 +38,32 @@ const ViewDetailBook = ({
     setOpenViewDetail(false);
     setDataViewDetail(null);
   };
+  // để hiển thị ảnh cả ảnh chính và phụ , thì sử dụng useEffect , ban đầu tạo 1 mảng rỗng , dùng điều kiện và push giá trị vào mảng mới và dùng rest ... để copy
+  useEffect(() => {
+    let arrImg = [];
+    if (dataViewDetail?.thumbnail) {
+      arrImg.push({
+        uid: uuidv4(),
+        name: dataViewDetail.mainText,
+        //status: "done",
+        url: `${import.meta.env.VITE_BACKEND_URL}/images/book/${
+          dataViewDetail?.thumbnail
+        }`,
+      });
+    }
+    if (dataViewDetail?.slider && dataViewDetail?.slider.length > 0) {
+      const slide = dataViewDetail?.slider.map((item) => {
+        return {
+          uid: uuidv4(),
+          name: dataViewDetail.mainText,
+          //status: "done",
+          url: `${import.meta.env.VITE_BACKEND_URL}/images/book/${item}`,
+        };
+      });
+      arrImg.push(...slide);
+    }
+    setFileList(arrImg);
+  }, [dataViewDetail]);
   return (
     <>
       <Drawer
@@ -97,6 +105,7 @@ const ViewDetailBook = ({
           fileList={fileList}
           onPreview={handlePreview}
           onChange={handleChange}
+          showUploadList={{ showRemoveIcon: false }}
         ></Upload>
         {previewImage && (
           <Image
