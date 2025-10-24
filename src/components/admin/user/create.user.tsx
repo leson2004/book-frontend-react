@@ -25,7 +25,6 @@ const CreateNewUser = ({
 }: IProps) => {
   const [form] = Form.useForm();
   const onFinish: FormProps<FieldType>["onFinish"] = async (values) => {
-    console.log("value", values);
     const { fullName, email, password, phone } = values;
     const res = await createNewUser(fullName, email, password, phone);
     console.log("resa", res);

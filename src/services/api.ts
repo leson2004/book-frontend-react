@@ -77,6 +77,10 @@ const getBookAPI = (query: string) => {
     `/api/v1/book?current=1&pageSize=10`
   );
 };
+const getCategoryAPI = () => {
+  const urlBackend = `/api/v1/database/category`;
+  return axios.get<IBackendRes<string[]>>(urlBackend);
+};
 export {
   loginApi,
   registerApi,
@@ -88,4 +92,5 @@ export {
   updateUser,
   deleteUser,
   getBookAPI,
+  getCategoryAPI,
 };

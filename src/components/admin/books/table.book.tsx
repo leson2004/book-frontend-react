@@ -4,7 +4,9 @@ import type { ActionType, ProColumns } from "@ant-design/pro-components";
 import { ProTable } from "@ant-design/pro-components";
 import { Button, Popconfirm } from "antd";
 import { useRef, useState } from "react";
+
 import ViewDetailBook from "./view.book";
+import CreateBook from "./create.book";
 
 // import {request} from 'umi-request';
 
@@ -166,7 +168,8 @@ function TableBook() {
             key="button"
             icon={<PlusOutlined />}
             onClick={() => {
-              actionRef.current?.reload();
+              //actionRef.current?.reload();
+              setOpenModalAddBook(true);
             }}
             type="primary"
           >
@@ -179,6 +182,10 @@ function TableBook() {
         setOpenViewDetail={setOpenViewDetail}
         dataViewDetail={dataViewDetail}
         setDataViewDetail={setDataViewDetail}
+      />
+      <CreateBook
+        openModalAddBook={openModalAddBook}
+        setOpenModalAddBook={setOpenModalAddBook}
       />
     </>
   );
