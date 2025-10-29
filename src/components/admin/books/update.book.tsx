@@ -26,11 +26,10 @@ import type { GetProp, UploadProps, UploadFile } from "antd";
 import { MAX_UPLOAD_IMAGE_SIZE } from "@/services/helper";
 import { UploadChangeParam } from "antd/es/upload";
 import { UploadRequestOption as RcCustomRequestOptions } from "rc-upload/lib/interface";
-
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 type IProps = {
-  openModalAddBook: boolean;
-  setOpenModalAddBook: (v: boolean) => void;
+  openModalUpdate: boolean;
+  setOpenModalUpdate: (v: boolean) => void;
   refreshTable: () => void;
 };
 type UserUploadFile = "thumbnail" | "slider";
@@ -43,9 +42,8 @@ type FieldType = {
   thumbnail: any;
   slider: any;
 };
-
-const CreateBook = (props: IProps) => {
-  const { openModalAddBook, setOpenModalAddBook, refreshTable } = props;
+const UpdateBook = (props: IProps) => {
+  const { openModalUpdate, setOpenModalUpdate, refreshTable } = props;
   const { message, notification } = App.useApp();
   const [form] = Form.useForm();
   const [isSubmit, setIsSubmit] = useState(false);
@@ -101,7 +99,7 @@ const CreateBook = (props: IProps) => {
       if (res && res.data) {
         message.success("create new book successful");
         form.resetFields();
-        setOpenModalAddBook(false);
+        setOpenModalUpdate(false);
         setFileListSlider([]);
         setFileListThumbnail([]);
         refreshTable();
@@ -201,12 +199,12 @@ const CreateBook = (props: IProps) => {
   return (
     <>
       <Modal
-        title="Thêm mới book"
-        open={openModalAddBook}
+        title="Cập Nhật Sách"
+        open={openModalUpdate}
         onOk={() => form.submit()}
         onCancel={() => {
           form.resetFields();
-          setOpenModalAddBook(false);
+          setOpenModalUpdate(false);
           setFileListSlider([]);
           setFileListThumbnail([]);
         }}
@@ -372,4 +370,4 @@ const CreateBook = (props: IProps) => {
     </>
   );
 };
-export default CreateBook;
+export default UpdateBook;

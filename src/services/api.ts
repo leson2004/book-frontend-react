@@ -73,14 +73,42 @@ const deleteUser = (id: string) => {
   return axios.delete<IBackendRes<IRegister>>(`/api/v1/user/${id}`);
 };
 const getBookAPI = (query: string) => {
-  return axios.get<IBackendRes<IModelPaginate<IBooks>>>(
-    `/api/v1/book?current=1&pageSize=10`
-  );
+  return axios.get<IBackendRes<IModelPaginate<IBooks>>>(`/api/v1/book${query}`);
 };
 const getCategoryAPI = () => {
   const urlBackend = `/api/v1/database/category`;
   return axios.get<IBackendRes<string[]>>(urlBackend);
 };
+export const callUploadBookImg = (fileImg: any, folder: string) => {
+  const bodyFormData = new FormData();
+  bodyFormData.append("fileImg", fileImg);
+  return axios<
+    IBackendRes<{
+      fileUploaded: string;
+    }>
+  >({
+    method: "post",
+    url: "/api/v1/file/upload",
+    data: bodyFormData,
+    headers: {
+      "Content-Type": "multipart/form-data",
+      "upload-type": folder,
+    },
+  });
+};
+export const createNewBook = (data: {
+  thumbnail: string;
+  slider: string[];
+  mainText: string;
+  author: string;
+  price: number;
+  quantity: number;
+  category: string;
+}) => {
+  const urlBackend = `/api/v1/book`;
+  return axios.post<IBackendRes<IBooks>>(urlBackend, data);
+};
+
 export {
   loginApi,
   registerApi,
