@@ -15,7 +15,7 @@ import {
 import type { FormProps } from "antd";
 import {
   callUploadBookImg,
-  createNewBook,
+  updateBookAPI,
   getCategoryAPI,
 } from "@/services/api";
 import { App } from "antd";
@@ -26,14 +26,18 @@ import type { GetProp, UploadProps, UploadFile } from "antd";
 import { MAX_UPLOAD_IMAGE_SIZE } from "@/services/helper";
 import { UploadChangeParam } from "antd/es/upload";
 import { UploadRequestOption as RcCustomRequestOptions } from "rc-upload/lib/interface";
+import { v4 as uuidv4 } from "uuid";
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 type IProps = {
   openModalUpdate: boolean;
   setOpenModalUpdate: (v: boolean) => void;
   refreshTable: () => void;
+  dataUpdate: IBooks | null;
+  setDataUpdate: (v: IBooks | null) => void;
 };
 type UserUploadFile = "thumbnail" | "slider";
 type FieldType = {
+  _id: string;
   mainText: string;
   author: string;
   price: number;
@@ -43,7 +47,13 @@ type FieldType = {
   slider: any;
 };
 const UpdateBook = (props: IProps) => {
-  const { openModalUpdate, setOpenModalUpdate, refreshTable } = props;
+  const {
+    openModalUpdate,
+    setOpenModalUpdate,
+    refreshTable,
+    dataUpdate,
+    setDataUpdate,
+  } = props;
   const { message, notification } = App.useApp();
   const [form] = Form.useForm();
   const [isSubmit, setIsSubmit] = useState(false);
@@ -61,6 +71,7 @@ const UpdateBook = (props: IProps) => {
 
   const [fileListThumbnail, setFileListThumbnail] = useState<UploadFile[]>([]);
   const [fileListSlider, setFileListSlider] = useState<UploadFile[]>([]);
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
   useEffect(() => {
     const fetchCategory = async () => {
       const res = await getCategoryAPI();
@@ -73,35 +84,69 @@ const UpdateBook = (props: IProps) => {
     };
     fetchCategory();
   }, []);
+  useEffect(() => {
+    if (dataUpdate) {
+      const arrThumbnail = [
+        {
+          uid: uuidv4(),
+          name: dataUpdate.thumbnail,
+          status: "done" as const,
+          url: `${import.meta.env.VITE_BACKEND_URL}/images/book/${
+            dataUpdate?.thumbnail
+          }`,
+        },
+      ];
+
+      const arrSlider = dataUpdate?.slider.map((item) => {
+        return {
+          uid: uuidv4(),
+          name: item,
+          status: "done" as const,
+          url: `${import.meta.env.VITE_BACKEND_URL}/images/book/${item}`,
+        };
+      });
+
+      // console.log("da", dataUpdate);
+      // setFileList(arrImg);
+      form.setFieldsValue({
+        _id: dataUpdate._id,
+        mainText: dataUpdate?.mainText,
+        author: dataUpdate?.author,
+        price: dataUpdate?.price,
+        quantity: dataUpdate?.quantity,
+        category: dataUpdate?.category,
+        slider: arrSlider,
+        thumbnail: arrThumbnail,
+      });
+      setFileListThumbnail(arrThumbnail);
+      setFileListSlider(arrSlider);
+    }
+  }, [dataUpdate]);
+
   // sau khi submit trả về value
   const onFinish: FormProps<FieldType>["onFinish"] = async (values) => {
     setIsSubmit(true);
-    // console.log("vl", values);
-    // console.log("thumb", fileListThumbnail);
-    // console.log("sl", fileListSlider);
     if (values) {
-      const thumbnail = fileListThumbnail.map((item) => {
-        return item.name;
-      });
-      const data = {
-        thumbnail: thumbnail[0],
-        slider: fileListSlider.map((item) => {
-          return item.name;
-        }),
-        mainText: values.mainText,
-        author: values.author,
-        price: values.price,
-        quantity: values.quantity,
-        category: values.category,
-      };
-      console.log("da", data);
-      const res = await createNewBook(data);
+      const { _id, mainText, author, price, category, quantity } = values;
+      const thumbnail = fileListThumbnail?.[0]?.name ?? "";
+      const slider = fileListSlider.map((item) => item.name) ?? [];
+      const res = await updateBookAPI(
+        _id,
+        mainText,
+        author,
+        price,
+        quantity,
+        category,
+        thumbnail,
+        slider
+      );
       if (res && res.data) {
-        message.success("create new book successful");
+        message.success("update book successful");
         form.resetFields();
         setOpenModalUpdate(false);
         setFileListSlider([]);
         setFileListThumbnail([]);
+        setDataUpdate(null);
         refreshTable();
       } else {
         message.error(res.message);
@@ -207,9 +252,10 @@ const UpdateBook = (props: IProps) => {
           setOpenModalUpdate(false);
           setFileListSlider([]);
           setFileListThumbnail([]);
+          setDataUpdate(null);
         }}
         okButtonProps={{ loading: isSubmit }}
-        okText="Tạo mới"
+        okText="Cập Nhật"
         cancelText="Huỷ"
         confirmLoading={isSubmit}
         destroyOnClose
@@ -228,6 +274,16 @@ const UpdateBook = (props: IProps) => {
           //onFinishFailed={onFinishFailed}
           autoComplete="off"
         >
+          <Row gutter={15}>
+            <Form.Item<FieldType>
+              labelCol={{ span: 24 }}
+              label="id"
+              name="_id"
+              hidden
+            >
+              <Input />
+            </Form.Item>
+          </Row>
           <Row gutter={16}>
             {/* Tên sách */}
             <Col span={12}>

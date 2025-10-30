@@ -104,7 +104,10 @@ function TableBook() {
               border: "none",
               cursor: "pointer",
             }}
-            onClick={() => setOpenModalUpdate(true)}
+            onClick={() => {
+              setOpenModalUpdate(true);
+              setDataUpdate(record);
+            }}
           >
             <EditOutlined style={{ fontSize: "16px", color: "#ff4d4f" }} />
           </button>
@@ -235,6 +238,8 @@ function TableBook() {
         openModalUpdate={openModalUpdate}
         setOpenModalUpdate={setOpenModalUpdate}
         refreshTable={refreshTable}
+        dataUpdate={dataUpdate}
+        setDataUpdate={setDataUpdate}
       />
     </>
   );
