@@ -21,7 +21,7 @@ const registerApi = async (
 };
 const fetchAccountAPI = async () => {
   return await axios.get<IBackendRes<IAccount>>("/api/v1/auth/account", {
-    headers: { delay: 2000 },
+    headers: { delay: 1000 },
   });
 };
 const logoutAPI = async () => {
@@ -73,7 +73,12 @@ const deleteUser = (id: string) => {
   return axios.delete<IBackendRes<IRegister>>(`/api/v1/user/${id}`);
 };
 const getBookAPI = (query: string) => {
-  return axios.get<IBackendRes<IModelPaginate<IBooks>>>(`/api/v1/book${query}`);
+  return axios.get<IBackendRes<IModelPaginate<IBooks>>>(
+    `/api/v1/book${query}`,
+    {
+      headers: { delay: 1500 },
+    }
+  );
 };
 const getCategoryAPI = () => {
   const urlBackend = `/api/v1/database/category`;
@@ -129,7 +134,10 @@ export const updateBookAPI = (
     slider,
   });
 };
-
+export const deleteBookAPI = (_id: string) => {
+  const urlBackend = `/api/v1/book/${_id}`;
+  return axios.delete<IBackendRes<IRegister>>(urlBackend);
+};
 export {
   loginApi,
   registerApi,

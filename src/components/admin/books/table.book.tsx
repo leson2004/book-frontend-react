@@ -1,8 +1,8 @@
-import { getBookAPI } from "@/services/api";
+import { deleteBookAPI, getBookAPI } from "@/services/api";
 import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 import type { ActionType, ProColumns } from "@ant-design/pro-components";
 import { ProTable } from "@ant-design/pro-components";
-import { Button, Popconfirm } from "antd";
+import { Button, message, Popconfirm } from "antd";
 import { useRef, useState } from "react";
 
 import ViewDetailBook from "./view.book";
@@ -38,6 +38,15 @@ function TableBook() {
 
   const refreshTable = () => {
     actionRef.current?.reload();
+  };
+  const handleDeleteBook = async (_id: string) => {
+    const res = await deleteBookAPI(_id);
+    if (res && res.data) {
+      message.success("delete book successful");
+      refreshTable();
+    } else {
+      message.error(res.message);
+    }
   };
   const columns: ProColumns<IBooks>[] = [
     {
@@ -112,11 +121,13 @@ function TableBook() {
             <EditOutlined style={{ fontSize: "16px", color: "#ff4d4f" }} />
           </button>
           <Popconfirm
-            title="Delete User"
-            description="Are you sure to delete this user?"
-            //onConfirm={"confirm"}
-            //onCancel={cancel}
-            okText="Yes"
+            title="Delete Book"
+            description="Are you sure to delete this book?"
+            onConfirm={() => {
+              handleDeleteBook(record._id);
+            }}
+            // onCancel={cancel}
+            okText="Delete"
             cancelText="No"
           >
             <button
