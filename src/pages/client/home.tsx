@@ -18,10 +18,16 @@ import {
 } from "antd";
 import { ShoppingCartOutlined, UserOutlined } from "@ant-design/icons";
 import "@/styles/home.scss";
-import type { PaginationProps, CheckboxOptionType, GetProp } from "antd";
+import type {
+  PaginationProps,
+  CheckboxOptionType,
+  GetProp,
+  FormProps,
+} from "antd";
 import { Flex, Spin } from "antd";
 
 import { getBookAPI, getCategoryAPI } from "@/services/api";
+import { Form } from "antd/lib";
 
 const { Content } = Layout;
 
@@ -34,6 +40,8 @@ const HomePage = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pageSizeState, setPageSizeState] = useState<number>(5);
+  const [filter, setFilter] = useState<string>("");
+  const [sortQuery, setSortQuery] = useState<string>("&sort=-sold");
   useEffect(() => {
     const fetchCategory = async () => {
       const res = await getCategoryAPI();
@@ -48,10 +56,16 @@ const HomePage = () => {
   }, []);
   useEffect(() => {
     fetchBook();
-  }, [currentPage, pageSizeState]);
+  }, [currentPage, pageSizeState, sortQuery, filter]);
   const fetchBook = async () => {
     setIsLoading(true);
     let query = `?current=${currentPage}&pageSize=${pageSizeState}`;
+    if (filter) {
+      query += filter;
+    }
+    if (sortQuery) {
+      query += sortQuery;
+    }
     const res = await getBookAPI(query);
     if (res && res.data) {
       setDataBook(res.data.result);
@@ -73,11 +87,38 @@ const HomePage = () => {
       setPageSizeState(pageSize);
     }
   };
-  //select box
+  //select box / filter
   const onChange: GetProp<typeof Checkbox.Group, "onChange"> = (
     checkedValues
   ) => {
-    console.log("checked = ", checkedValues);
+    // Nếu có ít nhất 1 checkbox được chọn
+    if (checkedValues.length > 0) {
+      // Convert mảng ['History', 'Sports'] => 'category=History,Sports'
+      const queryString = `&category=${checkedValues.join(",")}`;
+      setFilter(queryString);
+    } else {
+      // Nếu bỏ chọn hết, reset filter
+      setFilter("");
+    }
+  };
+  const onChangeTab = (key: string) => {
+    console.log(key);
+    if (key === "sold") {
+      setSortQuery("&sort=-sold");
+    }
+    if (key === "createdAt") {
+      setSortQuery("&sort=-createdAt");
+    }
+    if (key === "price") {
+      setSortQuery("&sort=price");
+    }
+    if (key === "-price") {
+      setSortQuery("&sort=-price");
+    }
+  };
+  // Price
+  const onFinish: FormProps<any>["onFinish"] = (values) => {
+    console.log("Success:", values);
   };
   return (
     <Layout className="bookstore-layout">
@@ -88,34 +129,65 @@ const HomePage = () => {
           <h4>Bộ lọc tìm kiếm</h4>
           <Divider />
           <div>Danh mục sản phẩm</div>
-
           <Checkbox.Group
-            options={dataCategory}
-            defaultValue={["Pear"]}
+            style={{ display: "flex", flexDirection: "column" }}
             onChange={onChange}
-            // style={{ display: "block", marginRight: 0 }}
-          />
+          >
+            {dataCategory.map((item) => (
+              <Checkbox
+                key={item.label}
+                value={item.value}
+                style={{ marginTop: 8 }}
+              >
+                {item.label}
+              </Checkbox>
+            ))}
+          </Checkbox.Group>
 
           <Divider />
           <div>Khoảng giá</div>
-          <div className="price-filter">
-            <InputNumber placeholder="TỪ" min={0} />
-            <InputNumber placeholder="ĐẾN" min={0} />
-          </div>
-          <Button type="primary" block style={{ marginTop: 16 }}>
-            Áp dụng
-          </Button>
+          <Form layout="inline" onFinish={onFinish}>
+            <div className="price-filter">
+              <Form.Item<any>
+                name="fromPrice"
+                rules={[
+                  { required: true, message: "Please input this price!" },
+                ]}
+              >
+                <InputNumber placeholder="TỪ" min={0} />
+              </Form.Item>
+              <Form.Item<any>
+                name="toPrice"
+                rules={[
+                  { required: true, message: "Please input this price!" },
+                ]}
+              >
+                <InputNumber placeholder="ĐẾN" min={0} />
+              </Form.Item>
+            </div>
+            <Form.Item>
+              <Button
+                type="primary"
+                htmlType="submit"
+                block
+                style={{ marginTop: 16 }}
+              >
+                Áp dụng
+              </Button>
+            </Form.Item>
+          </Form>
         </div>
 
         {/* BOOK LIST */}
         <div className="book-list">
           <Tabs
-            defaultActiveKey="1"
+            defaultActiveKey="sold"
+            onChange={onChangeTab}
             items={[
-              { key: "1", label: "Phổ biến" },
-              { key: "2", label: "Hàng mới" },
-              { key: "3", label: "Giá Thấp Đến Cao" },
-              { key: "4", label: "Giá Cao Đến Thấp" },
+              { key: "sold", label: "Phổ biến" },
+              { key: "createdAt", label: "Hàng mới" },
+              { key: "price", label: "Giá Thấp Đến Cao" },
+              { key: "-price", label: "Giá Cao Đến Thấp" },
             ]}
           />
 
