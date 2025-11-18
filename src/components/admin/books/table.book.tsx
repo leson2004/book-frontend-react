@@ -191,7 +191,7 @@ function TableBook() {
           }
           console.log("q", query);
           const res = await getBookAPI(query);
-          console.log("res", res);
+          // console.log("res", res);
           if (res.data) {
             setMeTa(res.data.meta);
             setCurrentDataTable(res.data.result ?? []);

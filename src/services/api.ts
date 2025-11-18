@@ -138,6 +138,11 @@ export const deleteBookAPI = (_id: string) => {
   const urlBackend = `/api/v1/book/${_id}`;
   return axios.delete<IBackendRes<IRegister>>(urlBackend);
 };
+const getBookById = (_id: string) => {
+  const urlBackend = `/api/v1/book/${_id}`;
+  return axios.get<IBackendRes<IBooks>>(urlBackend);
+};
+
 export {
   loginApi,
   registerApi,
@@ -150,4 +155,5 @@ export {
   deleteUser,
   getBookAPI,
   getCategoryAPI,
+  getBookById,
 };
