@@ -140,7 +140,9 @@ export const deleteBookAPI = (_id: string) => {
 };
 const getBookById = (_id: string) => {
   const urlBackend = `/api/v1/book/${_id}`;
-  return axios.get<IBackendRes<IBooks>>(urlBackend);
+  return axios.get<IBackendRes<IBooks>>(urlBackend, {
+    headers: { delay: 1500 },
+  });
 };
 
 export {
