@@ -79,4 +79,9 @@ declare global {
     createdAt: string;
     updatedAt: string;
   }
+  interface ICarts {
+    _id: string;
+    quantity: number;
+    detail: IBooks;
+  }
 }

@@ -1,18 +1,25 @@
 import { useEffect, useRef, useState } from "react";
 import ImageGallery from "react-image-gallery";
-import { Row, Col, Rate, Divider } from "antd";
+import { Row, Col, Rate, Divider, InputNumber, Input } from "antd";
 import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import { BsCartPlus } from "react-icons/bs";
+import { useCurrentApp } from "components/context/app.context";
+
 import "react-image-gallery/styles/css/image-gallery.css";
 import "@/styles/book.scss";
 import ModalGallery from "./model.gallery";
 interface IProps {
   dataBook: IBooks | null;
 }
+
+type UserAction = "MINUS" | "PLUS";
 const DetailBook = (props: IProps) => {
   const { dataBook } = props;
+
+  const { carts, setCarts } = useCurrentApp();
   const [isOpenModalGallery, setIsOpenModalGallery] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
+
   const [images, setImages] = useState<
     {
       original: string;
@@ -21,11 +28,10 @@ const DetailBook = (props: IProps) => {
       thumbnailClass: string;
     }[]
   >([]);
+  const [currentQuantity, setCurrentQuantity] = useState<number>(1);
+
   const refGallery = useRef<ImageGallery>(null);
 
-  // useEffect(() => {
-  //   let arrListImg = [];
-  // }, [dataBook]);
   // const images = [
   //   {
   //     original: "https://picsum.photos/id/1018/1000/600/",
@@ -40,21 +46,7 @@ const DetailBook = (props: IProps) => {
   //     thumbnail: "https://picsum.photos/id/1019/250/150/",
   //   },
   // ];
-  const baseURL = import.meta.env.VITE_BACKEND_URL;
 
-  // const images =
-  //   dataBook?.slider && dataBook?.thumbnail
-  //     ? [
-  //         {
-  //           original: `${baseURL}/images/book/${dataBook.thumbnail}`,
-  //           thumbnail: `${baseURL}/images/book/${dataBook.thumbnail}`,
-  //         },
-  //         ...dataBook.slider.map((img) => ({
-  //           original: `${baseURL}/images/book/${img}`,
-  //           thumbnail: `${baseURL}/images/book/${img}`,
-  //         })),
-  //       ]
-  //     : [];
   useEffect(() => {
     let arrImages = [];
     if (dataBook?.thumbnail) {
@@ -77,11 +69,60 @@ const DetailBook = (props: IProps) => {
     }
     setImages(arrImages);
   }, [dataBook]);
+  // handle
+  const baseURL = import.meta.env.VITE_BACKEND_URL;
+  const handleChangeButton = (type: UserAction) => {
+    if (type === "MINUS") {
+      if (currentQuantity - 1 <= 0) {
+        return;
+      }
+      setCurrentQuantity(currentQuantity - 1);
+    }
+    if (type === "PLUS" && dataBook) {
+      if (currentQuantity + 1 === +dataBook?.quantity) return; //max nếu gtri htai bằng số lượng thì dừng
+      setCurrentQuantity(currentQuantity + 1);
+    }
+  };
+  const handleChangeInput = (value: string) => {
+    if (!isNaN(+value)) {
+      if (+value > 0 && dataBook && +value < +dataBook.quantity) {
+        setCurrentQuantity(+value);
+      }
+    }
+  };
+  const handleAddCarts = () => {
+    const cartStorage = localStorage.getItem("carts");
+    if (cartStorage && dataBook) {
+      //update carts
+      const carts = JSON.parse(cartStorage) as ICarts[];
+      let isExistIndex = carts.findIndex((item) => item._id === dataBook?._id);
+      //check exist
+      if (isExistIndex > -1) {
+        carts[isExistIndex].quantity =
+          carts[isExistIndex].quantity + currentQuantity;
+      } else {
+        carts.push({
+          _id: dataBook?._id,
+          quantity: currentQuantity,
+          detail: dataBook,
+        });
+      }
+      localStorage.setItem("carts", JSON.stringify(carts));
+      setCarts(carts);
+    } else {
+      // tạo mới
+      const data = [
+        { _id: dataBook?._id!, quantity: currentQuantity, detail: dataBook! },
+      ];
+      localStorage.setItem("carts", JSON.stringify(data));
+      setCarts(data);
+    }
+  };
+  console.log(carts);
   const handleOnClickImage = () => {
     setIsOpenModalGallery(true);
     setCurrentIndex(refGallery?.current?.getCurrentIndex() ?? 0);
   };
-
   return (
     <>
       <div className="detail-container">
@@ -134,18 +175,23 @@ const DetailBook = (props: IProps) => {
               <div className="quantity">
                 <span className="left">Số lượng</span>
                 <span className="right qty-box">
-                  <button>
+                  <button onClick={() => handleChangeButton("MINUS")}>
                     <MinusOutlined />
                   </button>
-                  <input defaultValue={1} />
-                  <button>
+                  <Input
+                    onChange={(e) => {
+                      handleChangeInput(e.target.value);
+                    }}
+                    value={currentQuantity}
+                  />
+                  <button onClick={() => handleChangeButton("PLUS")}>
                     <PlusOutlined />
                   </button>
                 </span>
               </div>
 
               <div className="buy">
-                <button className="cart">
+                <button className="cart" onClick={() => handleAddCarts()}>
                   <BsCartPlus className="icon-cart" />
                   <span>Thêm giỏ hàng</span>
                 </button>
