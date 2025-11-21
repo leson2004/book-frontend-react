@@ -36,7 +36,11 @@ export const AppProvider = (props: TProps) => {
 
       setIsAppLoading(false);
     };
-
+    const dataCarts = localStorage.getItem("carts");
+    if (dataCarts) {
+      const data = JSON.parse(dataCarts);
+      setCarts(data);
+    }
     fetchAccount();
   }, []);
 

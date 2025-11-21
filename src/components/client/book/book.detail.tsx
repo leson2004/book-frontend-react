@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import ImageGallery from "react-image-gallery";
-import { Row, Col, Rate, Divider, InputNumber, Input } from "antd";
+import { Row, Col, Rate, Divider, InputNumber, Input, message } from "antd";
 import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import { BsCartPlus } from "react-icons/bs";
 import { useCurrentApp } from "components/context/app.context";
@@ -109,6 +109,7 @@ const DetailBook = (props: IProps) => {
       }
       localStorage.setItem("carts", JSON.stringify(carts));
       setCarts(carts);
+      message.success("add product to your cart that is success");
     } else {
       // tạo mới
       const data = [
@@ -116,6 +117,7 @@ const DetailBook = (props: IProps) => {
       ];
       localStorage.setItem("carts", JSON.stringify(data));
       setCarts(data);
+      message.success("add product to your cart that is success");
     }
   };
   console.log(carts);
