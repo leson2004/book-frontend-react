@@ -1,0 +1,102 @@
+.view-cart-container {
+  display: flex;
+  gap: 25px;
+  padding: 30px 50px;
+
+  .view-cart-left {
+    flex: 1;
+
+    .cart-item {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      gap: 25px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+      .book-img {
+        width: 80px;
+        height: 100px;
+        border-radius: 6px;
+        object-fit: cover;
+      }
+
+      .book-info {
+        flex: 1;
+
+        h4 {
+          margin: 0 0 8px 0;
+          font-size: 17px;
+        }
+
+        .price {
+          font-size: 15px;
+          color: #444;
+        }
+      }
+
+      .qty-box {
+        width: 80px;
+      }
+
+      .total {
+        font-size: 15px;
+        font-weight: 500;
+      }
+
+      .delete-icon {
+        font-size: 20px;
+        color: #ff4d4f;
+        cursor: pointer;
+        transition: 0.2s;
+
+        &:hover {
+          color: #d43838;
+        }
+      }
+    }
+  }
+
+  .view-cart-right {
+    width: 330px;
+
+    .summary-box {
+      background: #fff;
+      padding: 22px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+
+      .summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 12px;
+        font-size: 15px;
+      }
+
+      .total-money {
+        font-size: 18px;
+        font-weight: 600;
+        color: #e53935;
+        margin: 20px 0;
+      }
+
+      .btn-checkout {
+        width: 100%;
+        background: #e53935;
+        padding: 12px 0;
+        color: #fff;
+        font-size: 16px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: 0.2s;
+
+        &:hover {
+          background: #c62828;
+        }
+      }
+    }
+  }
+}
