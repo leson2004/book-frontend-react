@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
-import { InputNumber } from "antd";
+import { Button, Empty, InputNumber, message } from "antd";
 import { DeleteOutlined } from "@ant-design/icons";
 
 import "@/styles/order.scss";
 import { useCurrentApp } from "@/components/context/app.context";
 
-const OrderDetail = () => {
-  // const [carts, setCarts] = useState<ICarts[]>([]);
+type IProps = {
+  setCurrentStep: (v: number) => void;
+};
+const OrderDetail = (props: IProps) => {
+  const { setCurrentStep } = props;
   const { carts, setCarts } = useCurrentApp();
   const [totalPrice, setTotalPrice] = useState<number>(0);
   useEffect(() => {
@@ -46,51 +49,62 @@ const OrderDetail = () => {
       localStorage.setItem("carts", JSON.stringify(newCart));
     }
   };
-
+  const handleNextSteps = () => {
+    if (!carts.length) {
+      message.error("sản phẩm không tồn tại trong giỏ hàng ");
+      return;
+    }
+    setCurrentStep(1);
+  };
   return (
     <div className="view-cart-container">
       <div className="view-cart-left">
-        {carts.map((book, index) => (
-          <div className="cart-item" key={index}>
-            <img
-              src={`${import.meta.env.VITE_BACKEND_URL}/images/book/${
-                book.detail.thumbnail
-              }`}
-              alt="book"
-              className="book-img"
-            />
-
-            <div className="book-info">
-              <h4>{book.detail.mainText}</h4>
-              <span className="price">
-                {new Intl.NumberFormat("vi-VN").format(book.detail.price)} đ
-              </span>
-            </div>
-
-            <div className="qty-box">
-              <InputNumber
-                min={1}
-                max={99}
-                value={book.quantity}
-                onChange={(value) =>
-                  handleChangeQuantity(value as number, book.detail)
-                }
+        <div>
+          {carts.map((book, index) => (
+            <div className="cart-item" key={index}>
+              <img
+                src={`${import.meta.env.VITE_BACKEND_URL}/images/book/${
+                  book.detail.thumbnail
+                }`}
+                alt="book"
+                className="book-img"
               />
-            </div>
 
-            <div className="total">
-              Tổng:{" "}
-              {new Intl.NumberFormat("vi-VN").format(
-                book.detail.price * book.quantity
-              )}{" "}
-              đ
-            </div>
+              <div className="book-info">
+                <h4>{book.detail.mainText}</h4>
+                <span className="price">
+                  {new Intl.NumberFormat("vi-VN").format(book.detail.price)} đ
+                </span>
+              </div>
 
-            <div onClick={() => handleDeleteProduct(book._id as string)}>
-              <DeleteOutlined className="delete-icon" />
+              <div className="qty-box">
+                <InputNumber
+                  min={1}
+                  max={99}
+                  value={book.quantity}
+                  onChange={(value) =>
+                    handleChangeQuantity(value as number, book.detail)
+                  }
+                />
+              </div>
+
+              <div className="total">
+                Tổng:{" "}
+                {new Intl.NumberFormat("vi-VN").format(
+                  book.detail.price * book.quantity
+                )}{" "}
+                đ
+              </div>
+
+              <div onClick={() => handleDeleteProduct(book._id as string)}>
+                <DeleteOutlined className="delete-icon" />
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
+        {carts.length < 1 && (
+          <Empty description="không có sản phẩm trong giỏ hàng" />
+        )}
       </div>
 
       <div className="view-cart-right">
@@ -105,7 +119,14 @@ const OrderDetail = () => {
             <span>{new Intl.NumberFormat("vi-VN").format(totalPrice)} đ</span>
           </div>
 
-          <button className="btn-checkout">Mua Hàng ({carts.length})</button>
+          <Button
+            color="danger"
+            variant="solid"
+            className="btn-checkout"
+            onClick={() => handleNextSteps()}
+          >
+            Mua Hàng ({carts.length})
+          </Button>
         </div>
       </div>
     </div>
