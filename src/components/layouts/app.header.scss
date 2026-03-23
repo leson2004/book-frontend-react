@@ -1,25 +1,36 @@
 .header-container {
+    /* Match horizontal spacing with pages that use padding 0 32px */
+    padding: 0 32px;
+    box-sizing: border-box;
+
     .page-header {
         display: flex;
+        align-items: center;
+        justify-content: space-between;
         user-select: none;
         -moz-user-select: none;
         -webkit-user-select: none;
         height: 55px;
         color: #808089;
         width: 100%;
-        max-width: 1440px;
-        margin: 0 auto;
-        line-height: 55px;
+        max-width: none;
+        margin: 0;
+        line-height: normal;
+        box-sizing: border-box;
 
 
         &__top {
             display: flex;
-            width: 70%;
-            padding: 0 16px;
+            flex: 1;
+            width: auto;
+            min-width: 0;
+            align-items: center;
+            padding: 0;
         }
 
         &__bottom {
             display: flex;
+            align-items: center;
         }
 
         &__toggle {
@@ -38,12 +49,14 @@
         .logo {
             color: #61dafb;
             cursor: pointer;
-            display: block;
+            display: flex;
+            align-items: center;
+            gap: 10px;
 
             .icon-react {
                 font-size: 30px;
                 position: relative;
-                top: 8px;
+                top: 0;
                 margin-right: 5px;
 
 
@@ -74,32 +87,41 @@
             }
 
             .icon-search {
-                position: relative;
-                left: 35px;
+                /* Don't shift icon on top of the input */
+                position: static;
+                left: auto;
+                margin-left: 0;
             }
 
 
         }
 
         .input-search {
-            height: 25px;
+            height: 32px;
             outline: none;
-            padding: 5px 30px;
+            padding: 6px 12px;
             border-radius: 6px;
             border: 1px solid #ddd;
             flex: 1;
+            box-sizing: border-box;
+            line-height: 1;
         }
     }
 
     .navigation {
-        display: block;
+        display: flex;
+        align-items: center;
+        padding: 0;
+        margin: 0;
+        list-style: none;
         opacity: 1;
         height: auto;
 
         &__item {
             opacity: 0.8;
-            display: inline-block;
-            padding: 0 5px;
+            display: flex;
+            align-items: center;
+            padding: 0 8px;
 
             &:hover {
                 cursor: pointer;
@@ -111,15 +133,19 @@
 
         .icon-cart {
             font-size: 20px;
-            top: 5px;
+            top: 0;
             position: relative;
             color: #61dafb;
         }
     }
 
     @media (max-width: 600px) {
+        padding-left: 16px;
+        padding-right: 16px;
+
         .page-header {
             display: flex;
+            align-items: center;
 
             .logo {
                 display: none;
@@ -138,13 +164,11 @@
         }
 
         .navigation {
-            display: block;
             opacity: 1;
             height: auto;
 
             &__item {
                 opacity: 0.8;
-                display: inline-block;
 
                 &:hover {
                     cursor: pointer;

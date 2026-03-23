@@ -13,7 +13,7 @@ interface IAppContext {
   setCarts: (v: ICarts[]) => void;
 }
 
-const CurrentAppContext = createContext<IAppContext | null>(null);
+export const CurrentAppContext = createContext<IAppContext | null>(null);
 
 type TProps = {
   children: React.ReactNode;
@@ -82,7 +82,7 @@ export const useCurrentApp = () => {
 
   if (!currentAppContext) {
     throw new Error(
-      "useCurrentApp has to be used within <CurrentAppContext.Provider>"
+      "useCurrentApp has to be used within <CurrentAppContext.Provider>",
     );
   }
 

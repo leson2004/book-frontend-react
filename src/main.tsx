@@ -20,6 +20,7 @@ import ManageOrderPage from "pages/admin/manage.order";
 import ManageUserPage from "pages/admin/manage.user";
 import LayoutAdmin from "@/components/layouts/layout.admin";
 import OrderPage from "./pages/client/order";
+import HistoryPage from "./pages/client/orderDetail";
 
 const router = createBrowserRouter([
   {
@@ -51,6 +52,14 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <OrderPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "history",
+        element: (
+          <ProtectedRoute>
+            <HistoryPage />
           </ProtectedRoute>
         ),
       },
@@ -121,5 +130,5 @@ createRoot(document.getElementById("root")!).render(
         </ConfigProvider>
       </AppProvider>
     </App>
-  </StrictMode>
+  </StrictMode>,
 );

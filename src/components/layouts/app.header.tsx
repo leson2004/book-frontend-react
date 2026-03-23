@@ -10,29 +10,44 @@ import { Link } from "react-router-dom";
 import { useCurrentApp } from "components/context/app.context";
 
 import { logoutAPI } from "@/services/api";
+import AccountManage from "../client/account";
 
-const AppHeader = (props: any) => {
+interface IProps {
+  dataSearch: string;
+  setDataSearch: (v: string) => void;
+}
+const AppHeader = (props: IProps) => {
   const [openDrawer, setOpenDrawer] = useState(false);
-
-  const { isAuthenticated, setIsAuthenticated, setUser, user, carts } =
-    useCurrentApp();
-
+  const [isModalOpenManageAccount, setIsModalOpenManageAccount] =
+    useState<boolean>(false);
+  const {
+    isAuthenticated,
+    setIsAuthenticated,
+    setUser,
+    user,
+    carts,
+    setCarts,
+  } = useCurrentApp();
   const navigate = useNavigate();
-
   const handleLogout = async () => {
     //todo
     const res = await logoutAPI();
     if (res.data) {
       setIsAuthenticated(false);
       setUser(null);
+      setCarts([]);
       localStorage.removeItem("access_token");
+      localStorage.removeItem("carts");
     }
   };
 
   let items = [
     {
       label: (
-        <label style={{ cursor: "pointer" }} onClick={() => alert("me")}>
+        <label
+          style={{ cursor: "pointer" }}
+          onClick={() => setIsModalOpenManageAccount(true)}
+        >
           Quản lý tài khoản
         </label>
       ),
@@ -113,17 +128,15 @@ const AppHeader = (props: any) => {
                 <span onClick={() => navigate("/")}>
                   {" "}
                   <FaReact className="rotate icon-react" />
-                  Hỏi Dân !T
+                  BOOK
                 </span>
-
-                <VscSearchFuzzy className="icon-search" />
               </span>
               <input
                 className="input-search"
                 type={"text"}
                 placeholder="Bạn tìm gì hôm nay"
-                // value={props.searchTerm}
-                // onChange={(e) => props.setSearchTerm(e.target.value)}
+                value={props.dataSearch}
+                onChange={(e) => props.setDataSearch(e.target.value)}
               />
             </div>
           </div>
@@ -174,6 +187,10 @@ const AppHeader = (props: any) => {
         <p>Đăng xuất</p>
         <Divider />
       </Drawer>
+      <AccountManage
+        isModalOpenManageAccount={isModalOpenManageAccount}
+        setIsModalOpenManageAccount={setIsModalOpenManageAccount}
+      />
     </>
   );
 };

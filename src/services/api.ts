@@ -10,7 +10,7 @@ const registerApi = async (
   fullName: string,
   email: string,
   password: string,
-  phone: string
+  phone: string,
 ) => {
   return await axios.post<IBackendRes<IRegister>>("/api/v1/user/register", {
     fullName,
@@ -29,14 +29,14 @@ const logoutAPI = async () => {
 };
 const getUsersAPI = (query: string) => {
   return axios.get<IBackendRes<IModelPaginate<IUserTable>>>(
-    `api/v1/user?${query}`
+    `api/v1/user?${query}`,
   );
 };
 const createNewUser = async (
   fullName: string,
   email: string,
   password: string,
-  phone: string
+  phone: string,
 ) => {
   return await axios.post<IBackendRes<IRegister>>(`/api/v1/user`, {
     fullName,
@@ -51,17 +51,17 @@ const createNewUserBulk = (
     fullName: string;
     email: string;
     phone: string;
-  }[]
+  }[],
 ) => {
   return axios.post<IBackendRes<IUserBulk>>(
     "/api/v1/user/bulk-create",
-    arrayUserUpload
+    arrayUserUpload,
   );
 };
 const updateUser = (
   _id: string | undefined,
   fullName: string,
-  phone: string
+  phone: string,
 ) => {
   return axios.put<IBackendRes<IRegister>>("/api/v1/user", {
     _id,
@@ -77,7 +77,7 @@ const getBookAPI = (query: string) => {
     `/api/v1/book${query}`,
     {
       headers: { delay: 1500 },
-    }
+    },
   );
 };
 const getCategoryAPI = () => {
@@ -121,7 +121,7 @@ export const updateBookAPI = (
   quantity: number,
   category: string,
   thumbnail: string,
-  slider: string[]
+  slider: string[],
 ) => {
   const urlBackend = `/api/v1/book/${_id}`;
   return axios.put<IBackendRes<IRegister>>(urlBackend, {
@@ -144,7 +144,61 @@ const getBookById = (_id: string) => {
     headers: { delay: 1500 },
   });
 };
-
+const createOrder = (
+  name: string,
+  address: string,
+  phone: string,
+  totalPrice: number,
+  type: string,
+  detail: any,
+) => {
+  const urlBackend = `/api/v1/order`;
+  return axios.post<IBackendRes<IBooks>>(
+    urlBackend,
+    { name, address, phone, totalPrice, type, detail },
+    { headers: { delay: 1500 } },
+  );
+};
+const getOrderHistory = () => {
+  const urlBackend = `/api/v1/history`;
+  return axios.get<IBackendRes<IOrderHistory[]>>(urlBackend, {
+    headers: { delay: 100 },
+  });
+};
+const updateUserInfoAPI = (
+  _id: string,
+  fullName: string,
+  avatar: string,
+  phone: string,
+) => {
+  const urlBackend = `/api/v1/user`;
+  return axios.put<IBackendRes<IRegister>>(urlBackend, {
+    fullName,
+    phone,
+    avatar,
+    _id,
+  });
+};
+const updateUserPasswordAPI = (
+  email: string,
+  oldpass: string,
+  newpass: string,
+) => {
+  const urlBackend = `/api/v1/user/change-password`;
+  return axios.post<IBackendRes<IRegister>>(urlBackend, {
+    email,
+    oldpass,
+    newpass,
+  });
+};
+const getDashboardData = () => {
+  const urlBackend = `/api/v1/database/dashboard`;
+  return axios.get<IBackendRes<IDashboard>>(urlBackend);
+};
+const getListOrder = (params: string) => {
+  const urlBackend = `/api/v1/order${params}`;
+  return axios.get<IBackendRes<IModelPaginate<IOrder>>>(urlBackend);
+};
 export {
   loginApi,
   registerApi,
@@ -158,4 +212,10 @@ export {
   getBookAPI,
   getCategoryAPI,
   getBookById,
+  createOrder,
+  getOrderHistory,
+  updateUserInfoAPI,
+  updateUserPasswordAPI,
+  getDashboardData,
+  getListOrder,
 };

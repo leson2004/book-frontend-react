@@ -84,4 +84,44 @@ declare global {
     quantity: number;
     detail: IBooks;
   }
+  interface IOrderHistory{
+    _id:string;
+    name:string;
+    type:string;
+    email:string;
+    phone:string;
+    userId:string;
+    detail:
+    {
+    bookName:string;
+    quantity:number;
+    _id:string;
+  }[];
+    totalPrice:number;
+    createdAt: string;
+    updatedAt: string;
+  }
+  interface IDashboard {
+    countOrder:number;
+    countUser:number;countBook:number;
+  }
+  interface IOrder {
+    _id: string;
+    name: string;
+    address: string;
+    phone:string;
+    type:string;
+    paymentStatus:string;
+    paymentRef:string;
+    detail:
+    {
+    bookName:string;
+    quantity:number;
+    _id:string;
+    }[];
+    totalPrice:number;
+    createdAt: string;
+    updatedAt: string;
+
+  }
 }

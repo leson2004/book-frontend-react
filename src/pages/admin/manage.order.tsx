@@ -1,9 +1,10 @@
+import ManageOrder from "@/components/admin/order/manage.order";
 const ManageOrderPage = () => {
-    return (
-        <div>
-            ManageOrderPage
-        </div>
-    )
-}
+  return (
+    <div>
+      <ManageOrder />
+    </div>
+  );
+};
 
 export default ManageOrderPage;

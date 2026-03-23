@@ -1,16 +1,25 @@
 import { useEffect, useState } from "react";
-import { Form, Input, Radio, Button } from "antd";
+import { Form, Input, Radio, Button, message } from "antd";
 import { DeleteOutlined } from "@ant-design/icons";
+import type { FormProps } from "antd";
 
 import "@/styles/order.scss";
 import { useCurrentApp } from "@/components/context/app.context";
+import { createOrder } from "@/services/api";
 type IProps = {
   currentStep: number;
   setCurrentStep: (v: number) => void;
 };
+type FieldType = {
+  fullName: string;
+  phone: string;
+  method: string;
+  address: string;
+};
 const Payment = (props: IProps) => {
   const { carts, setCarts, user } = useCurrentApp();
   const { setCurrentStep, currentStep } = props;
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [totalPrice, setTotalPrice] = useState<number>(0);
   useEffect(() => {
     if (carts && carts.length > 0) {
@@ -32,8 +41,34 @@ const Payment = (props: IProps) => {
       localStorage.setItem("carts", JSON.stringify(newCart));
     }
   };
-  const handleSubmit = (values: any) => {
-    console.log("Dữ liệu gửi đi:", values);
+  const onFinish: FormProps<FieldType>["onFinish"] = async (values) => {
+    if (values) {
+      const { fullName, phone, address, method } = values;
+      const detailOrder = carts.map((item) => {
+        return {
+          bookName: item.detail.mainText,
+          quantity: item.quantity,
+          _id: item.detail._id,
+        };
+      });
+      setIsLoading(true);
+      const res = await createOrder(
+        fullName,
+        address,
+        phone,
+        totalPrice,
+        method,
+        detailOrder
+      );
+      if (res && res.data) {
+        setCurrentStep(2);
+        setCarts([]);
+        localStorage.removeItem("carts");
+      } else {
+        message.error("có lỗi xảy ra ở sever");
+      }
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -83,15 +118,15 @@ const Payment = (props: IProps) => {
         <Form
           layout="vertical"
           initialValues={{
-            payment: "COD",
+            method: "COD",
             fullName: user?.fullName || "",
             phone: user?.phone || "",
             address: "",
           }}
-          onFinish={handleSubmit}
+          onFinish={onFinish}
         >
           {/* PAYMENT */}
-          <Form.Item name="method" style={{ marginBottom: "3px" }}>
+          <Form.Item<FieldType> name="method" style={{ marginBottom: "3px" }}>
             <Radio.Group className="pay-method">
               <Radio value="COD">Thanh toán khi nhận hàng</Radio>
               <Radio value="BANKING">Chuyển khoản ngân hàng</Radio>
@@ -99,7 +134,7 @@ const Payment = (props: IProps) => {
           </Form.Item>
 
           {/* FULL NAME */}
-          <Form.Item
+          <Form.Item<FieldType>
             label="Họ tên"
             name="fullName"
             rules={[{ required: true, message: "Vui lòng nhập họ tên" }]}
@@ -109,7 +144,7 @@ const Payment = (props: IProps) => {
           </Form.Item>
 
           {/* PHONE */}
-          <Form.Item
+          <Form.Item<FieldType>
             label=" Số điện thoại"
             name="phone"
             rules={[
@@ -124,7 +159,7 @@ const Payment = (props: IProps) => {
           </Form.Item>
 
           {/* ADDRESS */}
-          <Form.Item
+          <Form.Item<FieldType>
             label=" Địa chỉ nhận hàng"
             name="address"
             rules={[{ required: true, message: "Vui lòng nhập địa chỉ" }]}
@@ -151,6 +186,7 @@ const Payment = (props: IProps) => {
             style={{ width: "100%", marginTop: "15px" }}
             color="danger"
             variant="solid"
+            loading={isLoading}
           >
             Đặt Hàng ({carts.length})
           </Button>

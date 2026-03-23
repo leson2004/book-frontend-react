@@ -23,7 +23,6 @@ const OrderDetail = (props: IProps) => {
     }
   }, [carts]);
   const handleChangeQuantity = (value: number, book: IBooks) => {
-    console.log("eh");
     if (!value || +value < 1) return;
     if (!isNaN(+value)) {
       //update quantity
@@ -91,7 +90,7 @@ const OrderDetail = (props: IProps) => {
               <div className="total">
                 Tổng:{" "}
                 {new Intl.NumberFormat("vi-VN").format(
-                  book.detail.price * book.quantity
+                  book.detail.price * book.quantity,
                 )}{" "}
                 đ
               </div>
